@@ -1,3 +1,123 @@
+// MIN,MAX,SUM,AVG
+#include <iostream>
+#include <vector>
+#include <omp.h>
+#include <time.h>
+    
+using namespace std;
+
+int main() {
+const int size = 1000;
+vector<int> data(size);
+srand(time(0));
+for (int i = 0; i < size; ++i) {
+data[i] = rand() % 100;
+}
+    
+int min_value = data[0];
+#pragma omp parallel for reduction(min:min_value)
+for (int i = 0; i < size; ++i) {
+if (data[i] < min_value) {
+min_value = data[i];
+}
+    
+}
+int max_value = data[0];
+#pragma omp parallel for reduction(max:max_value)
+for (int i = 0; i < size; ++i) {
+if (data[i] > max_value) {
+max_value = data[i];
+}
+    
+}
+int sum = 0;
+#pragma omp parallel for reduction(+:sum)
+for (int i = 0; i < size; ++i) {
+sum += data[i];
+}
+    
+float average = 0.0;
+#pragma omp parallel for reduction(+:average)
+for (int i = 0; i < size; ++i) {
+average += static_cast<float>(data[i]) / size;
+}
+    
+cout << "Minimum value: " << min_value << endl;
+cout << "Maximum value: " << max_value << endl;
+cout << "Sum of values: " << sum << endl;
+cout << "Average of values: " << average << endl;
+return 0;
+}
+// ---------------------&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&-------------------------------------------------------------
+// BFS, DFS
+#include <iostream>
+#include <vector>
+#include <queue>
+#include <omp.h>
+using namespace std;
+const int MAX_NODES = 100;
+vector<int> graph[MAX_NODES];
+void parallelBFS(int start) {
+bool visited[MAX_NODES] = {false};
+queue<int> q;
+q.push(start);
+visited[start] = true;
+while (!q.empty()) {
+int current = q.front();
+q.pop();
+#pragma omp parallel for
+for (int i = 0; i < graph[current].size(); ++i) {
+int neighbor = graph[current][i];
+#pragma omp critical
+{
+if (!visited[neighbor]) {
+q.push(neighbor);
+visited[neighbor] = true;
+}
+}
+}
+}
+cout << "BFS Visited Nodes: ";
+for (int i = 0; i < MAX_NODES; ++i) {
+if (visited[i]) {
+cout << i << " ";
+}
+}
+cout << endl;
+}
+void parallelDFS(int start, bool visited[]) {
+visited[start] = true;
+#pragma omp parallel for
+for (int i = 0; i < graph[start].size(); ++i) {
+int neighbor = graph[start][i];
+if (!visited[neighbor]) {
+parallelDFS(neighbor, visited);
+}
+}
+}
+int main() {
+graph[0] = {1, 2};
+graph[1] = {0, 3, 4};
+graph[2] = {0, 5, 6};
+graph[3] = {1};
+graph[4] = {1};
+graph[5] = {2};
+graph[6] = {2};
+int start_node = 0;
+parallelBFS(start_node);
+bool visited[MAX_NODES] = {false};
+parallelDFS(start_node, visited);
+cout << "DFS Visited Nodes: ";
+for (int i = 0; i < MAX_NODES; ++i) {
+if (visited[i]) {
+cout << i << " ";
+}
+}
+cout << endl;
+return 0;
+}
+
+// -------------------------------------$$$$$$$$$$$$$$$$$$$$$$$$$$-------------------------------------
 import java.util.*;
 
 public class Atm_interface{
