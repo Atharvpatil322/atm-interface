@@ -118,6 +118,55 @@ return 0;
 }
 
 // -------------------------------------$$$$$$$$$$$$$$$$$$$$$$$$$$-------------------------------------
+
+
+#Creating the neural network model
+import keras
+from keras.layers import Dense, Activation,Dropout
+from keras.models import Sequential
+model = Sequential()
+model.add(Dense(128,activation = 'relu',input_dim =13))
+model.add(Dense(64,activation = 'relu'))
+410255: Laboratory Practice V
+Department of Computer Engineering, JSCOE
+model.add(Dense(32,activation = 'relu'))
+model.add(Dense(16,activation = 'relu'))
+model.add(Dense(1))
+#model.compile(optimizer='adam', loss='mse', metrics=['mae'])
+model.compile(optimizer = 'adam',loss ='mean_squared_error',metrics=['mae'])
+!pip install ann_visualizer
+!pip install graphviz
+from ann_visualizer.visualize import ann_viz;
+#Build your model here
+ann_viz(model, title="DEMO ANN");
+history = model.fit(X_train, y_train, epochs=100, validation_split=0.05)
+# By plotting both loss and mean average error, we can see that our model was
+capable of learning patterns in our data without overfitting taking place (as
+shown by the validation set curves)
+from plotly.subplots import make_subplots
+import plotly.graph_objects as go
+fig = go.Figure()
+fig.add_trace(go.Scattergl(y=history.history['loss'],
+name='Train'))
+fig.add_trace(go.Scattergl(y=history.history['val_loss'],
+name='Valid'))
+fig.update_layout(height=500, width=700,
+xaxis_title='Epoch',
+yaxis_title='Loss')
+fig.show()
+fig = go.Figure()
+410255: Laboratory Practice V
+Department of Computer Engineering, JSCOE
+fig.add_trace(go.Scattergl(y=history.history['mae'],
+name='Train'))
+fig.add_trace(go.Scattergl(y=history.history['val_mae'],
+name='Valid'))
+fig.update_layout(height=500, width=700,
+xaxis_title='Epoch',
+yaxis_title='Mean Absolute Error')
+fig.show()
+
+    //-----------₹₹₹₹₹₹₹₹₹₹₹₹₹₹₹₹₹₹₹₹₹₹-----------
 import java.util.*;
 
 public class Atm_interface{
